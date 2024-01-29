@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -10,8 +9,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/alejandro-rl/gamelogger-backend/internal/domain"
-	"github.com/alejandro-rl/gamelogger-backend/internal/repository"
+	"github.com/alejandro-rl/gamelogger-backend/internal/api"
 	"github.com/go-sql-driver/mysql"
 )
 
@@ -28,6 +26,7 @@ func main() {
 		DBName:               "gamelogger",
 		AllowNativePasswords: true,
 		ParseTime:            true,
+		MultiStatements:      true,
 	}
 
 	// Opens the connection
@@ -46,38 +45,31 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Add game to database
+	//Routing
+	r := api.Routes(db)
 
-	var game []domain.Game
-
-	err = json.Unmarshal(igdb(), &game)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Printf("%#v\n", game)
-
-	err = repository.CreateGame(db, &game[0])
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	log.Println("Server listening on :8090")
+	log.Fatal(http.ListenAndServe(":8090", r))
 	/*
-		//Create tables on the database
-		path := filepath.Join("db/schema.sql")
+		// Add game to database
 
-		c, ioErr := os.ReadFile(path)
-		if ioErr != nil {
-			log.Fatal(err)
-		}
 
-		query := string(c)
 
-		_, err = db.Exec(query)
+		var game []domain.Game
+
+		err = json.Unmarshal(igdb(), &game)
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		fmt.Printf("%#v\n", game)
+
+		err = repository.CreateGame(db, &game[0])
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
 	*/
 
 }
