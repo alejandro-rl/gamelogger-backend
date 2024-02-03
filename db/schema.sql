@@ -18,7 +18,7 @@ DROP TABLE IF EXISTS genre;
 CREATE TABLE genre (
     genre_id INT AUTO_INCREMENT,
     igdb_id INT,
-    genre VARCHAR(50),
+    genre VARCHAR(60),
     PRIMARY KEY (genre_id)
 );
 
@@ -37,7 +37,7 @@ DROP TABLE IF EXISTS platform;
 CREATE TABLE platform (
     plat_id INT AUTO_INCREMENT,
     igdb_id INT,
-    platform VARCHAR(50),
+    platform VARCHAR(60),
     PRIMARY KEY (plat_id)
 );
 
@@ -51,11 +51,14 @@ CREATE TABLE game_platform (
     PRIMARY KEY (game_id,plat_id)
 );
 
+DROP TABLE IF EXISTS game_cover;
+
 CREATE TABLE game_cover (
     game_id INT,
+    type INT,
     image_path VARCHAR(1024),
     FOREIGN KEY (game_id) REFERENCES game(game_id),
-    PRIMARY KEY (game_id)
+    PRIMARY KEY (game_id,type)
 );
 
 SET FOREIGN_KEY_CHECKS=1; -- to re-enable them

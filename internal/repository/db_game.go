@@ -8,7 +8,7 @@ import (
 
 func CreateGame(db *sql.DB, game *domain.Game) error {
 	query := `
-	INSERT INTO games
+	INSERT INTO game
 	(igdb_id,name,release_date,description)
 	VALUES (?,?,?,?)
 	`
