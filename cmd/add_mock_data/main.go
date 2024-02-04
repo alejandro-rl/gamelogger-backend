@@ -51,8 +51,13 @@ func main() {
 	AddPlatforms(db, "../../db/platforms.json")
 
 	//Add Games
-	//AddGames(db, "../../db/mock_games.json")
+	AddGames(db, "../../db/mock_games.json")
 
+}
+
+func prettyPrint(i interface{}) string {
+	s, _ := json.MarshalIndent(i, "", "\t")
+	return string(s)
 }
 
 func OpenJSON(path string) *os.File {

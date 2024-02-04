@@ -21,3 +21,19 @@ func CreateGenre(db *sql.DB, genre *domain.Genre) error {
 	return nil
 
 }
+
+func GetGenreByIgdbID(db *sql.DB, igdb_id int) (*domain.Genre, error) {
+	query := `
+	SELECT * FROM genre WHERE igdb_id = ?
+	`
+	row := db.QueryRow(query, igdb_id)
+	genre := &domain.Genre{}
+	err := row.Scan(&genre.ID, &genre.IgdbID, &genre.Name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return genre, nil
+
+}

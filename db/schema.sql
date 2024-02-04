@@ -7,9 +7,9 @@ CREATE TABLE game (
     igdb_id INT,
     name VARCHAR(250),
     release_date INT,
-    description VARCHAR(2000),
+    description VARCHAR(2500),
     url_name VARCHAR(250),
-    average_rating FLOAT,
+    average_rating FLOAT DEFAULT 0,
     PRIMARY KEY (game_id)
 );
 
