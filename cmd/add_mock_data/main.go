@@ -45,13 +45,17 @@ func main() {
 	}
 
 	//Add Genres
-	AddGenres(db, "../../db/genres.json")
+	//AddGenres(db, "../../db/genres.json")
 
 	//Add Platforms
-	AddPlatforms(db, "../../db/platforms.json")
+	//AddPlatforms(db, "../../db/platforms.json")
 
 	//Add Games
-	AddGames(db, "../../db/mock_games.json")
+	//AddGames(db, "../../db/mock_games.json")
+
+	game, _ := repository.GetGameByID(db, 1)
+
+	log.Print(prettyPrint(game))
 
 }
 
@@ -123,7 +127,7 @@ func AddPlatforms(db *sql.DB, path string) {
 
 func AddGames(db *sql.DB, path string) {
 
-	var games []domain.Game
+	var games []domain.GameSet
 
 	jsonFile := OpenJSON(path)
 

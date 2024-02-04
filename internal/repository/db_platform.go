@@ -37,3 +37,19 @@ func GetPlatformByIgdbID(db *sql.DB, igdb_id int) (*domain.Platform, error) {
 	return platform, nil
 
 }
+
+func GetPlatformByID(db *sql.DB, plat_id int) (*domain.Platform, error) {
+	query := `
+	SELECT * FROM platform WHERE plat_id = ?
+	`
+	row := db.QueryRow(query, plat_id)
+	platform := &domain.Platform{}
+	err := row.Scan(&platform.ID, &platform.IgdbID, &platform.Name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return platform, nil
+
+}

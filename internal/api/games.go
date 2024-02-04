@@ -13,7 +13,7 @@ import (
 func createGameHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		var game []domain.Game
+		var game []domain.GameSet
 		json.NewDecoder(r.Body).Decode(&game)
 
 		err := repository.CreateGame(db, &game[0])
