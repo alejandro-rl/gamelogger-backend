@@ -53,12 +53,11 @@ CREATE TABLE game_platform (
 
 DROP TABLE IF EXISTS game_cover;
 
-CREATE TABLE game_cover (
+CREATE TABLE game_image (
     game_id INT,
-    type INT,
     image_path VARCHAR(1024),
     FOREIGN KEY (game_id) REFERENCES game(game_id),
-    PRIMARY KEY (game_id,type)
+    PRIMARY KEY (game_id)
 );
 
 SET FOREIGN_KEY_CHECKS=1; -- to re-enable them

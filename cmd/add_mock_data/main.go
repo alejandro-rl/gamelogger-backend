@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/alejandro-rl/gamelogger-backend/internal/domain"
 	"github.com/alejandro-rl/gamelogger-backend/internal/repository"
@@ -44,18 +45,22 @@ func main() {
 		log.Fatal(err)
 	}
 
+	//Create image folder if it doesn't exist yet
+	game_img_path := filepath.Join("../../db/game_images")
+	err = os.MkdirAll(game_img_path, os.ModePerm)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	//Add Genres
-	//AddGenres(db, "../../db/genres.json")
+	AddGenres(db, "../../db/genres.json")
 
 	//Add Platforms
-	//AddPlatforms(db, "../../db/platforms.json")
+	AddPlatforms(db, "../../db/platforms.json")
 
 	//Add Games
-	//AddGames(db, "../../db/mock_games.json")
-
-	game, _ := repository.GetGameByID(db, 1)
-
-	log.Print(prettyPrint(game))
+	AddGames(db, "../../db/mock_games.json", game_img_path)
 
 }
 
@@ -125,7 +130,7 @@ func AddPlatforms(db *sql.DB, path string) {
 	jsonFile.Close()
 }
 
-func AddGames(db *sql.DB, path string) {
+func AddGames(db *sql.DB, path string, game_img_path string) {
 
 	var games []domain.GameSet
 
@@ -141,7 +146,7 @@ func AddGames(db *sql.DB, path string) {
 
 	for i := 0; i < len(games); i++ {
 
-		err = repository.CreateGame(db, &games[i])
+		err = repository.CreateGame(db, &games[i], game_img_path)
 		if err != nil {
 			log.Println(err)
 		}

@@ -2,12 +2,16 @@ package repository
 
 import (
 	"database/sql"
+	"io"
 	"log"
+	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/alejandro-rl/gamelogger-backend/internal/domain"
 )
 
-func CreateGame(db *sql.DB, game *domain.GameSet) error {
+func CreateGame(db *sql.DB, game *domain.GameSet, game_img_path string) error {
 
 	// Create game without genres and platforms since these are stored in other tables
 	query := `
@@ -42,6 +46,14 @@ func CreateGame(db *sql.DB, game *domain.GameSet) error {
 	//Associate Game and Platforms in game_platform table
 
 	err = SetGamePlatforms(db, game_id, game.Platforms)
+
+	if err != nil {
+		return err
+	}
+
+	// Get game images, save to folder and associate the two in game_image table
+
+	err = SetGameImages(db, game_id, game.IgdbID, game_img_path)
 
 	if err != nil {
 		return err
@@ -236,4 +248,57 @@ func GetGamePlatforms(db *sql.DB, game_id int) ([]*domain.Platform, error) {
 	}
 
 	return plat_list, nil
+}
+
+func SetGameImages(db *sql.DB, game_id int, igdb_id int, game_image_path string) error {
+	// Request Image Hash to IGDB
+	hash := RequestImageHash(igdb_id)
+
+	// Get image from IGDB
+	url := "https://images.igdb.com/igdb/image/upload/t_720p/"
+
+	resp, err := http.Get(url + hash + ".jpg")
+
+	if err != nil {
+		log.Print("Could not get game image from IGDB")
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	//Create File
+	full_path := game_image_path + "/" + hash + ".jpg"
+	file, err := os.Create(full_path)
+
+	if err != nil {
+		log.Print("Could not create game image file")
+		return err
+	}
+
+	defer file.Close()
+
+	//Dump response body to file
+	_, err = io.Copy(file, resp.Body)
+
+	if err != nil {
+		log.Print("Could not save game image to file")
+	}
+
+	//With the image saved, insert the image path and game id into the game_image table
+	abs_path, _ := filepath.Abs(full_path)
+
+	query := `
+	INSERT INTO game_image
+	(game_id,image_path)
+	VALUES (?,?)
+	`
+	_, err = db.Exec(query, game_id, abs_path)
+
+	if err != nil {
+		log.Print("Could not Insert values into game_image table")
+		return err
+	}
+
+	return nil
+
 }

@@ -10,13 +10,13 @@ import (
 	"github.com/alejandro-rl/gamelogger-backend/internal/repository"
 )
 
-func createGameHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+func createGameHandler(db *sql.DB, game_img_path string) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		var game []domain.GameSet
 		json.NewDecoder(r.Body).Decode(&game)
 
-		err := repository.CreateGame(db, &game[0])
+		err := repository.CreateGame(db, &game[0], game_img_path)
 
 		if err != nil {
 			http.Error(w, "Failed to create user", http.StatusInternalServerError)
