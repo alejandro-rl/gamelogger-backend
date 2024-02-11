@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"net/http"
 	"path/filepath"
 
 	"github.com/gorilla/mux"
@@ -9,13 +10,15 @@ import (
 
 func Routes(db *sql.DB) *mux.Router {
 
-	game_image_path := filepath.Join("../../db/images")
+	game_image_path := filepath.Join("../../db/game_images")
 
 	//New router
 	r := mux.NewRouter()
 
 	//Game Routes
 	r.HandleFunc("/game", createGameHandler(db, game_image_path)).Methods("POST")
+	r.HandleFunc("/game/{url_name}", getGameHandler(db)).Methods("GET")
+	r.Handle("/game_images", http.StripPrefix("/game_images", http.FileServer(http.Dir(game_image_path))))
 
 	//Genre Routes
 	r.HandleFunc("/genre", createGenreHandler(db)).Methods("POST")

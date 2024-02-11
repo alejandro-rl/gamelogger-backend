@@ -102,6 +102,45 @@ func GetGameByID(db *sql.DB, id int) (*domain.GameGet, error) {
 
 }
 
+func GetGameByURLName(db *sql.DB, url_name string) (*domain.GameGet, error) {
+	//Query game info
+	query := `
+	SELECT * FROM game WHERE url_name = ?
+	`
+	row := db.QueryRow(query, url_name)
+	game := &domain.GameGet{}
+	err := row.Scan(&game.ID, &game.IgdbID, &game.Name, &game.ReleaseDate, &game.Description, &game.URL, &game.AverageRating)
+
+	if err != nil {
+		return nil, err
+	}
+
+	//Fill game.Genres with genre names
+	genres, err := GetGameGenres(db, game.ID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for i := 0; i < len(genres); i++ {
+		game.Genres = append(game.Genres, genres[i].Name)
+	}
+
+	//Fill game.Platforms with platform names
+	platforms, err := GetGamePlatforms(db, game.ID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for i := 0; i < len(platforms); i++ {
+		game.Platforms = append(game.Platforms, platforms[i].Name)
+	}
+
+	return game, nil
+
+}
+
 func SetGameGenres(db *sql.DB, game_id int, genres []int) error {
 	query := `
 	INSERT INTO game_genre
