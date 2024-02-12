@@ -4,7 +4,11 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io"
+	"log"
 	"net/http"
+	"os"
+	"strconv"
 
 	"github.com/alejandro-rl/gamelogger-backend/internal/domain"
 	"github.com/alejandro-rl/gamelogger-backend/internal/repository"
@@ -33,11 +37,11 @@ func createGameHandler(db *sql.DB, game_img_path string) func(w http.ResponseWri
 func getGameHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		//Getting the id parameter from the URL
+		// Get the 'url_name' parameter from the URL
 		vars := mux.Vars(r)
 		url_name := vars["url_name"]
 
-		//fetch ugame data
+		//fetch game data
 		game, err := repository.GetGameByURLName(db, url_name)
 
 		if err != nil {
@@ -48,6 +52,41 @@ func getGameHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		//Game object to JSON
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(game)
+
+	}
+}
+
+func getGameImageHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		// Get the 'id' parameter from the URL
+		vars := mux.Vars(r)
+		id := vars["id"]
+
+		// Convert 'id' to an integer
+		game_id, err := strconv.Atoi(id)
+
+		//fetch game image path
+		path, err := repository.GetGameImages(db, game_id)
+
+		if err != nil {
+			http.Error(w, "Game Image not found", http.StatusNotFound)
+			return
+		}
+
+		//Open image file
+		img, err := os.Open(path)
+
+		if err != nil {
+			log.Print("Image could not be opened")
+			log.Fatal(err)
+
+		}
+		defer img.Close()
+
+		//Copy content of image file to Response Writer (w)
+		w.Header().Set("Content-Type", "image/jpeg")
+		io.Copy(w, img)
 
 	}
 }

@@ -341,3 +341,22 @@ func SetGameImages(db *sql.DB, game_id int, igdb_id int, game_image_path string)
 	return nil
 
 }
+
+func GetGameImages(db *sql.DB, game_id int) (string, error) {
+
+	//Query game info
+	query := `
+	SELECT image_path FROM game_image WHERE game_id = ?
+	`
+	row := db.QueryRow(query, game_id)
+	var path string
+	err := row.Scan(&path)
+
+	if err != nil {
+		log.Print("Could not get image path from game_image")
+		return "", err
+	}
+
+	return path, nil
+
+}
