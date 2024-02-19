@@ -8,6 +8,7 @@ import (
 
 	"github.com/alejandro-rl/gamelogger-backend/internal/api"
 	"github.com/go-sql-driver/mysql"
+	"github.com/rs/cors"
 )
 
 var db *sql.DB
@@ -45,7 +46,14 @@ func main() {
 	//Routing
 	r := api.Routes(db)
 
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:5173"},
+		AllowCredentials: true,
+	})
+
+	handler := c.Handler(r)
+
 	log.Println("Server listening on :8090")
-	log.Fatal(http.ListenAndServe(":8090", r))
+	log.Fatal(http.ListenAndServe(":8090", handler))
 
 }

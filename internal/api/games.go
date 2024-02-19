@@ -4,10 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"io"
-	"log"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/alejandro-rl/gamelogger-backend/internal/domain"
@@ -74,19 +71,7 @@ func getGameImageHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request
 			return
 		}
 
-		//Open image file
-		img, err := os.Open(path)
-
-		if err != nil {
-			log.Print("Image could not be opened")
-			log.Fatal(err)
-
-		}
-		defer img.Close()
-
-		//Copy content of image file to Response Writer (w)
-		w.Header().Set("Content-Type", "image/jpeg")
-		io.Copy(w, img)
+		http.ServeFile(w, r, path)
 
 	}
 }
