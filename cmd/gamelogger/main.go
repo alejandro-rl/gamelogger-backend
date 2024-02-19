@@ -11,9 +11,8 @@ import (
 	"github.com/rs/cors"
 )
 
-var db *sql.DB
-
 func main() {
+	var db *sql.DB
 
 	// Capture connection properties.
 	cfg := mysql.Config{
