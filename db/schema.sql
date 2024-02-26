@@ -66,7 +66,7 @@ CREATE TABLE user (
     user_id INT AUTO_INCREMENT,
     email VARCHAR(256),
     username VARCHAR(20),
-    description VARCHAR (2000),
+    description VARCHAR (2000) DEFAULT '',
     hash VARCHAR(255),
     PRIMARY KEY (user_id)
 );

@@ -59,7 +59,7 @@ func RequestImageHash(igdb_id int) string {
 
 }
 
-func prettyPrint(i interface{}) string {
-	s, _ := json.MarshalIndent(i, "", "\t")
-	return string(s)
-}
+// func prettyPrint(i interface{}) string {
+// 	s, _ := json.MarshalIndent(i, "", "\t")
+// 	return string(s)
+// }

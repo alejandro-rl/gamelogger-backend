@@ -83,7 +83,7 @@ func updateUserHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) 
 		var user *domain.User
 		json.NewDecoder(r.Body).Decode(&user)
 
-		err = repository.UpdateUser(db, user)
+		err = repository.UpdateUser(db, user, user_id)
 
 		if err != nil {
 			http.Error(w, "User not found", http.StatusNotFound)

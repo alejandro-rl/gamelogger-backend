@@ -52,13 +52,14 @@ func GetUserByID(db *sql.DB, user_id int) (*domain.User, error) {
 
 }
 
-func UpdateUser(db *sql.DB, user *domain.User) error {
+func UpdateUser(db *sql.DB, user *domain.User, user_id int) error {
 
 	query := "UPDATE user SET email = ?, username = ?,description = ? WHERE user_id = ?"
-	_, err := db.Exec(query, user.Email, user.Username, user.Description)
+	_, err := db.Exec(query, user.Email, user.Username, user.Description, user_id)
 
 	if err != nil {
 		log.Print("Could not update user")
+		log.Print(err.Error())
 		return err
 	}
 
@@ -81,16 +82,17 @@ func DeleteUser(db *sql.DB, user_id int) error {
 }
 
 func LoginUser(db *sql.DB, AuthToken *jwtauth.JWTAuth, user_req *domain.UserRequest) (string, error) {
+
 	query := `
-	SELECT * FROM user where 
-	email = ?
+	SELECT * FROM user where email = ?
 	`
 	row := db.QueryRow(query, user_req.Email)
-	var user *domain.User
+	var user domain.User
 	err := row.Scan(&user.ID, &user.Email, &user.Username, &user.Description, &user.Hash)
 
 	if err != nil {
 		log.Print("could not query user from table")
+		log.Print(err.Error())
 		return "", err
 	}
 
@@ -109,7 +111,6 @@ func LoginUser(db *sql.DB, AuthToken *jwtauth.JWTAuth, user_req *domain.UserRequ
 		log.Print("Could not generate user access token")
 		return "", err
 	}
-
 	return tokenString, nil
 
 }
