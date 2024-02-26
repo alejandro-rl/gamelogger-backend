@@ -54,13 +54,13 @@ func main() {
 	}
 
 	//Add Genres
-	AddGenres(db, "../../db/genres.json")
+	//AddGenres(db, "../../db/genres.json")
 
 	//Add Platforms
-	AddPlatforms(db, "../../db/platforms.json")
+	//AddPlatforms(db, "../../db/platforms.json")
 
 	//Add Games
-	AddGames(db, "../../db/mock_games.json", game_img_path)
+	//AddGames(db, "../../db/mock_games.json", game_img_path)
 
 }
 

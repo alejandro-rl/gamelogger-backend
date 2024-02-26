@@ -7,11 +7,13 @@ import (
 	"os"
 
 	"github.com/alejandro-rl/gamelogger-backend/internal/api"
+	"github.com/go-chi/jwtauth/v5"
 	"github.com/go-sql-driver/mysql"
 	"github.com/rs/cors"
 )
 
 func main() {
+	//Start database connection
 	var db *sql.DB
 
 	// Capture connection properties.
@@ -42,8 +44,14 @@ func main() {
 		log.Fatal(err)
 	}
 
+	//Access Token Generation
+	var AuthToken *jwtauth.JWTAuth
+	AuthToken = GenerateAuthToken()
+
+	return AuthToken
+
 	//Routing
-	r := api.Routes(db)
+	r := api.Routes(db, AuthToken)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173"},
@@ -55,4 +63,11 @@ func main() {
 	log.Println("Server listening on :8090")
 	log.Fatal(http.ListenAndServe(":8090", handler))
 
+}
+
+func GenerateAuthToken() *jwtauth.JWTAuth {
+	//Access Token
+	var JWT_SECRET_KEY = os.Getenv("JWT_SECRET_KEY")
+	tokenAuth := jwtauth.New("HS256", []byte(JWT_SECRET_KEY), nil)
+	return tokenAuth
 }

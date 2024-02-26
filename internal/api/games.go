@@ -63,6 +63,11 @@ func getGameImageHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request
 		// Convert 'id' to an integer
 		game_id, err := strconv.Atoi(id)
 
+		if err != nil {
+			http.Error(w, "Please provide the correct input!", http.StatusBadRequest)
+			return
+		}
+
 		//fetch game image path
 		path, err := repository.GetGameImages(db, game_id)
 

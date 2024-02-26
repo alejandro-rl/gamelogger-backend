@@ -13,13 +13,13 @@ type GameSet struct {
 
 // This struct handles game info coming from the database
 type GameGet struct {
-	ID            int
-	IgdbID        int
-	Name          string
-	ReleaseDate   int
-	Description   string
-	Genres        []string
-	Platforms     []string
-	URL           string
-	AverageRating float32
+	ID            int      `json:"id"`
+	IgdbID        int      `json:"igdb_id"`
+	Name          string   `json:"name"`
+	ReleaseDate   int      `json:"release_date"`
+	Description   string   `json:"description"`
+	Genres        []string `json:"genres"`
+	Platforms     []string `json:"platforms"`
+	URL           string   `json:"url"`
+	AverageRating float32  `json:"average_rating"`
 }
