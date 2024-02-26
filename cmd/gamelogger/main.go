@@ -45,10 +45,7 @@ func main() {
 	}
 
 	//Access Token Generation
-	var AuthToken *jwtauth.JWTAuth
-	AuthToken = GenerateAuthToken()
-
-	return AuthToken
+	AuthToken := GenerateAuthToken()
 
 	//Routing
 	r := api.Routes(db, AuthToken)
