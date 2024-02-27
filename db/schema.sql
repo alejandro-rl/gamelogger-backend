@@ -71,13 +71,13 @@ CREATE TABLE user (
     PRIMARY KEY (user_id)
 );
 
-DROP TABLE IF EXISTS status;
+-- DROP TABLE IF EXISTS status;
 
-CREATE TABLE status (
-    status_id INT AUTO_INCREMENT,
-    status_name VARCHAR(50),
-    PRIMARY KEY (status_id)
-);
+-- CREATE TABLE status (
+--     status_id INT AUTO_INCREMENT,
+--     status_name VARCHAR(50),
+--     PRIMARY KEY (status_id)
+-- );
 
 DROP TABLE IF EXISTS log;
 
@@ -120,8 +120,8 @@ CREATE TABLE review (
     favorite BOOLEAN,
     time_played_total TIME,
     review_text VARCHAR(8000),
-    total_likes INT,
-    total_comments INT,
+    total_likes INT DEFAULT 0,
+    total_comments INT DEFAULT 0,
     log_id INT,
 
     FOREIGN KEY (log_id) REFERENCES log(log_id),
@@ -147,14 +147,31 @@ CREATE TABLE list (
 
 DROP TABLE IF EXISTS game_list;
 
- CREATE TABLE game_list (
+CREATE TABLE game_list (
     game_id INT,
     list_id INT,
 
     FOREIGN KEY (game_id) REFERENCES game(game_id),
-    FOREIGN key (list_id) REFERENCES list(list_id),
+    FOREIGN KEY (list_id) REFERENCES list(list_id),
     PRIMARY KEY (game_id,list_id)
  );
+
+
+DROP TABLE IF EXISTS comment;
+
+CREATE TABLE comment (
+    comment_id INT AUTO_INCREMENT,
+    text VARCHAR(2000),
+    user_id INT,
+    review_id INT DEFAULT 0,
+    list_id INT DEFAULT 0,
+
+    FOREIGN KEY (user_id) REFERENCES user(user_id),
+    FOREIGN KEY (list_id) REFERENCES list(list_id),
+    FOREIGN KEY (review_id) REFERENCES review(review_id),
+    PRIMARY KEY (comment_id)
+    
+);
 
 
 

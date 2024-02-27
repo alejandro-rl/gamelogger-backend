@@ -1,0 +1,17 @@
+[
+    {
+        "status_name": "Playing"
+    },
+    {
+        "status_name": "Wishlist"
+    },
+    {
+        "status_name": "Finished"
+    },
+    {
+        "status_name": "Completed"
+    },
+    {
+        "status_name": "Dropped"
+    }
+]

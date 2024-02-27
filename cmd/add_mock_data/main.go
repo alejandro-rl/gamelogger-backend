@@ -62,11 +62,9 @@ func main() {
 	//Add Games
 	//AddGames(db, "../../db/mock_games.json", game_img_path)
 
-}
+	//Add Status
+	//AddStatus(db, "../../db/status.json")
 
-func prettyPrint(i interface{}) string {
-	s, _ := json.MarshalIndent(i, "", "\t")
-	return string(s)
 }
 
 func OpenJSON(path string) *os.File {
@@ -147,6 +145,31 @@ func AddGames(db *sql.DB, path string, game_img_path string) {
 	for i := 0; i < len(games); i++ {
 
 		err = repository.CreateGame(db, &games[i], game_img_path)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	jsonFile.Close()
+}
+
+func AddStatus(db *sql.DB, path string) {
+
+	var status []domain.Status
+
+	jsonFile := OpenJSON(path)
+
+	byteValue, err := io.ReadAll(jsonFile)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	json.Unmarshal(byteValue, &status)
+
+	for i := 0; i < len(status); i++ {
+
+		err = repository.CreateStatus(db, &status[i])
 		if err != nil {
 			log.Println(err)
 		}

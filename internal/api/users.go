@@ -37,8 +37,10 @@ func getUserHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 		// Get the 'id' parameter from the URL
 		vars := mux.Vars(r)
-		id := vars["id"]
-		user_id, err := strconv.Atoi(id)
+		u_id := vars["user_id"]
+
+		// Convert 'id' to an integer
+		user_id, err := strconv.Atoi(u_id)
 
 		if err != nil {
 			http.Error(w, "Please provide the correct input!", http.StatusBadRequest)
@@ -65,8 +67,10 @@ func updateUserHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) 
 
 		// Get the 'id' parameter from the URL
 		vars := mux.Vars(r)
-		id := vars["id"]
-		user_id, err := strconv.Atoi(id)
+		u_id := vars["user_id"]
+
+		// Convert 'id' to an integer
+		user_id, err := strconv.Atoi(u_id)
 
 		if err != nil {
 			http.Error(w, "Please provide the correct input!", http.StatusBadRequest)
@@ -82,8 +86,9 @@ func updateUserHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) 
 		//If autheticated, user data can  be modified
 		var user *domain.User
 		json.NewDecoder(r.Body).Decode(&user)
+		user.ID = user_id
 
-		err = repository.UpdateUser(db, user, user_id)
+		err = repository.UpdateUser(db, user)
 
 		if err != nil {
 			http.Error(w, "User not found", http.StatusNotFound)
@@ -100,8 +105,10 @@ func deleteUserHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) 
 
 		// Get the 'id' parameter from the URL
 		vars := mux.Vars(r)
-		id := vars["id"]
-		user_id, err := strconv.Atoi(id)
+		u_id := vars["user_id"]
+
+		// Convert 'id' to an integer
+		user_id, err := strconv.Atoi(u_id)
 
 		if err != nil {
 			http.Error(w, "Please provide the correct input!", http.StatusBadRequest)
@@ -114,7 +121,8 @@ func deleteUserHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 
-		//If autheticated, user data can  be deleted
+		//If autheticated, user data can  be modified
+
 		err = repository.DeleteUser(db, user_id)
 
 		if err != nil {
@@ -155,12 +163,20 @@ func VerifyAuth(r *http.Request, user_id int) bool {
 	* the request has been hit (from url params), if not that means user is using
 	* different JWT token and hence unauthorized.
 	 */
-	_, claims, _ := jwtauth.FromContext(r.Context())
-	userIdFromClaims := int(claims["id"].(float64))
+
+	userIdFromClaims := GetIDFromClaims(r)
 
 	if user_id != userIdFromClaims {
 		return false
 	} else {
 		return true
 	}
+}
+
+func GetIDFromClaims(r *http.Request) int {
+	_, claims, _ := jwtauth.FromContext(r.Context())
+	user_id := int(claims["id"].(float64))
+
+	return user_id
+
 }

@@ -52,10 +52,28 @@ func GetUserByID(db *sql.DB, user_id int) (*domain.User, error) {
 
 }
 
-func UpdateUser(db *sql.DB, user *domain.User, user_id int) error {
+func GetUserByUsername(db *sql.DB, username string) (*domain.User, error) {
+	query := `
+	SELECT * FROM user where 
+	username = ?
+	`
+	row := db.QueryRow(query, username)
+	var user *domain.User
+	err := row.Scan(&user.ID, &user.Email, &user.Username, &user.Description, &user.Hash)
+
+	if err != nil {
+		log.Print("could not query user from table")
+		return nil, err
+	}
+
+	return user, nil
+
+}
+
+func UpdateUser(db *sql.DB, user *domain.User) error {
 
 	query := "UPDATE user SET email = ?, username = ?,description = ? WHERE user_id = ?"
-	_, err := db.Exec(query, user.Email, user.Username, user.Description, user_id)
+	_, err := db.Exec(query, user.Email, user.Username, user.Description, user.ID)
 
 	if err != nil {
 		log.Print("Could not update user")
@@ -91,7 +109,7 @@ func LoginUser(db *sql.DB, AuthToken *jwtauth.JWTAuth, user_req *domain.UserRequ
 	err := row.Scan(&user.ID, &user.Email, &user.Username, &user.Description, &user.Hash)
 
 	if err != nil {
-		log.Print("could not query user from table")
+		log.Print("Could not query user from table")
 		log.Print(err.Error())
 		return "", err
 	}
@@ -104,7 +122,7 @@ func LoginUser(db *sql.DB, AuthToken *jwtauth.JWTAuth, user_req *domain.UserRequ
 	}
 
 	//After verifying user credentials, generate a access token
-	claims := map[string]interface{}{"id": user.ID, "email": user.Email}
+	claims := map[string]interface{}{"id": user.ID, "email": user.Email, "username": user.Username}
 	_, tokenString, err := AuthToken.Encode(claims)
 
 	if err != nil {
